@@ -53,7 +53,7 @@ router.get("/:id", async (req, res, next) => {
   try {
     // Your code here
     const tree = await Tree.findByPk(treeId, {
-        attributes: ['id', 'tree', 'location', 'heightFt', 'groundCircumferenceFt'],
+        // attributes: ['id', 'tree', 'location', 'heightFt', 'groundCircumferenceFt', 'createdAt', 'updatedAt'],
     });
 
     if (tree) {
@@ -94,9 +94,19 @@ router.get("/:id", async (req, res, next) => {
  */
 router.post("/", async (req, res, next) => {
   try {
+    // get properties
+    const { name, location, height, size } = req.body;
+
+    const newTree = await Tree.create({
+        tree: name,
+        location,
+        heightFt: height,
+        groundCircumferenceFt: size,
+    })
     res.json({
       status: "success",
       message: "Successfully created new tree",
+      data: newTree,
     });
   } catch (err) {
     next({
