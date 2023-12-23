@@ -5,7 +5,7 @@ const router = express.Router();
 /**
  * BASIC PHASE 1, Step A - Import model
  */
-const { Tree } = require('../db/models');
+const { Tree } = require("../db/models");
 const { QueryInterface } = require("sequelize");
 const { sequelize } = require("../db/models/index.js");
 
@@ -14,7 +14,7 @@ const { sequelize } = require("../db/models/index.js");
  *   Import Op to perform comparison operations in WHERE clauses
  **/
 // Your code here
-const { Op } = require('sequelize');
+const { Op } = require("sequelize");
 /**
  * BASIC PHASE 1, Step B - List of all trees in the database
  *
@@ -31,11 +31,10 @@ router.get("/", async (req, res, next) => {
     attributes: ["heightFt", "tree", "id"],
     order: [["heightFt", "DESC"]],
   });
- 
 
   // Your code here
 
- return res.json(trees);
+  return res.json(trees);
 });
 
 /**
@@ -53,7 +52,7 @@ router.get("/:id", async (req, res, next) => {
   try {
     // Your code here
     const tree = await Tree.findByPk(treeId, {
-        // attributes: ['id', 'tree', 'location', 'heightFt', 'groundCircumferenceFt', 'createdAt', 'updatedAt'],
+      // attributes: ['id', 'tree', 'location', 'heightFt', 'groundCircumferenceFt', 'createdAt', 'updatedAt'],
     });
 
     if (tree) {
@@ -98,11 +97,11 @@ router.post("/", async (req, res, next) => {
     const { name, location, height, size } = req.body;
 
     const newTree = await Tree.create({
-        tree: name,
-        location,
-        heightFt: height,
-        groundCircumferenceFt: size,
-    })
+      tree: name,
+      location,
+      heightFt: height,
+      groundCircumferenceFt: size,
+    });
     res.json({
       status: "success",
       message: "Successfully created new tree",
@@ -141,10 +140,22 @@ router.post("/", async (req, res, next) => {
  */
 router.delete("/:id", async (req, res, next) => {
   try {
-    res.json({
-      status: "success",
-      message: `Successfully removed tree ${req.params.id}`,
-    });
+    const tree = await Tree.findByPk(req.params.id);
+
+    if (tree) {
+      await tree.destroy();
+
+      res.json({
+        status: "success",
+        message: `Successfully removed tree ${req.params.id}`,
+      });
+    } else {
+      next({
+        status: "not-found",
+        message: `Could not remove tree ${req.params.id}`,
+        details: "Tree not found",
+      });
+    }
   } catch (err) {
     next({
       status: "error",
