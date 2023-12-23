@@ -1,21 +1,23 @@
 // Instantiate router - DO NOT MODIFY
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
 /**
  * BASIC PHASE 1, Step A - Import model
  */
-const { Tree } = require('../models/trees.js');
-
+const { Tree } = require('../db/models');
+const { QueryInterface } = require("sequelize");
+const { sequelize } = require("../db/models/index.js");
 
 /**
  * INTERMEDIATE BONUS PHASE 1 (OPTIONAL), Step A:
  *   Import Op to perform comparison operations in WHERE clauses
  **/
-// Your code here 
-
+// Your code here
+const { Op } = require('sequelize');
 /**
  * BASIC PHASE 1, Step B - List of all trees in the database
+ *
  *
  * Path: /
  * Protocol: GET
@@ -24,12 +26,16 @@ const { Tree } = require('../models/trees.js');
  *   - Object properties: heightFt, tree, id
  *   - Ordered by the heightFt from tallest to shortest
  */
-router.get('/', async (req, res, next) => {
-    let trees = [];
+router.get("/", async (req, res, next) => {
+  let trees = await Tree.findAll({
+    attributes: ["heightFt", "tree", "id"],
+    order: [["heightFt", "DESC"]],
+  });
+ 
 
-    // Your code here 
+  // Your code here
 
-    res.json(trees);
+ return res.json(trees);
 });
 
 /**
@@ -41,28 +47,30 @@ router.get('/', async (req, res, next) => {
  * Response: JSON Object
  *   - Properties: id, tree, location, heightFt, groundCircumferenceFt
  */
-router.get('/:id', async (req, res, next) => {
-    let tree;
+router.get("/:id", async (req, res, next) => {
+  let tree;
 
-    try {
-        // Your code here 
+  try {
+    // Your code here
 
-        if (tree) {
-            res.json(tree);
-        } else {
-            next({
-                status: "not-found",
-                message: `Could not find tree ${req.params.id}`,
-                details: 'Tree not found'
-            });
-        }
-    } catch(err) {
-        next({
-            status: "error",
-            message: `Could not find tree ${req.params.id}`,
-            details: err.errors ? err.errors.map(item => item.message).join(', ') : err.message
-        });
+    if (tree) {
+      res.json(tree);
+    } else {
+      next({
+        status: "not-found",
+        message: `Could not find tree ${req.params.id}`,
+        details: "Tree not found",
+      });
     }
+  } catch (err) {
+    next({
+      status: "error",
+      message: `Could not find tree ${req.params.id}`,
+      details: err.errors
+        ? err.errors.map((item) => item.message).join(", ")
+        : err.message,
+    });
+  }
 });
 
 /**
@@ -81,19 +89,21 @@ router.get('/:id', async (req, res, next) => {
  *   - Property: data
  *     - Value: object (the new tree)
  */
-router.post('/', async (req, res, next) => {
-    try {
-        res.json({
-            status: "success",
-            message: "Successfully created new tree",
-        });
-    } catch(err) {
-        next({
-            status: "error",
-            message: 'Could not create new tree',
-            details: err.errors ? err.errors.map(item => item.message).join(', ') : err.message
-        });
-    }
+router.post("/", async (req, res, next) => {
+  try {
+    res.json({
+      status: "success",
+      message: "Successfully created new tree",
+    });
+  } catch (err) {
+    next({
+      status: "error",
+      message: "Could not create new tree",
+      details: err.errors
+        ? err.errors.map((item) => item.message).join(", ")
+        : err.message,
+    });
+  }
 });
 
 /**
@@ -116,19 +126,21 @@ router.post('/', async (req, res, next) => {
  *   - Property: details
  *     - Value: Tree not found
  */
-router.delete('/:id', async (req, res, next) => {
-    try {
-        res.json({
-            status: "success",
-            message: `Successfully removed tree ${req.params.id}`,
-        });
-    } catch(err) {
-        next({
-            status: "error",
-            message: `Could not remove tree ${req.params.id}`,
-            details: err.errors ? err.errors.map(item => item.message).join(', ') : err.message
-        });
-    }
+router.delete("/:id", async (req, res, next) => {
+  try {
+    res.json({
+      status: "success",
+      message: `Successfully removed tree ${req.params.id}`,
+    });
+  } catch (err) {
+    next({
+      status: "error",
+      message: `Could not remove tree ${req.params.id}`,
+      details: err.errors
+        ? err.errors.map((item) => item.message).join(", ")
+        : err.message,
+    });
+  }
 });
 
 /**
@@ -165,16 +177,18 @@ router.delete('/:id', async (req, res, next) => {
  *   - Property: details
  *     - Value: Tree not found
  */
-router.put('/:id', async (req, res, next) => {
-    try {
-        // Your code here 
-    } catch(err) {
-        next({
-            status: "error",
-            message: 'Could not update new tree',
-            details: err.errors ? err.errors.map(item => item.message).join(', ') : err.message
-        });
-    }
+router.put("/:id", async (req, res, next) => {
+  try {
+    // Your code here
+  } catch (err) {
+    next({
+      status: "error",
+      message: "Could not update new tree",
+      details: err.errors
+        ? err.errors.map((item) => item.message).join(", ")
+        : err.message,
+    });
+  }
 });
 
 /**
@@ -188,11 +202,10 @@ router.put('/:id', async (req, res, next) => {
  *   - Object properties: heightFt, tree, id
  *   - Ordered by the heightFt from tallest to shortest
  */
-router.get('/search/:value', async (req, res, next) => {
-    let trees = [];
+router.get("/search/:value", async (req, res, next) => {
+  let trees = [];
 
-
-    res.json(trees);
+  res.json(trees);
 });
 
 // Export class - DO NOT MODIFY
