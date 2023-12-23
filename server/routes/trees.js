@@ -5,7 +5,8 @@ const router = express.Router();
 /**
  * BASIC PHASE 1, Step A - Import model
  */
-// Your code here 
+const { Tree } = require('../models/trees.js');
+
 
 /**
  * INTERMEDIATE BONUS PHASE 1 (OPTIONAL), Step A:
