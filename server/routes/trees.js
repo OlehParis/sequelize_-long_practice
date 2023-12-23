@@ -48,10 +48,13 @@ router.get("/", async (req, res, next) => {
  *   - Properties: id, tree, location, heightFt, groundCircumferenceFt
  */
 router.get("/:id", async (req, res, next) => {
-  let tree;
+  let treeId = req.params.id;
 
   try {
     // Your code here
+    const tree = await Tree.findByPk(treeId, {
+        attributes: ['id', 'tree', 'location', 'heightFt', 'groundCircumferenceFt'],
+    });
 
     if (tree) {
       res.json(tree);
